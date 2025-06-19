@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { tempService } from "../service/teacherService";
+import { tempService } from "@/service/teacherService";
 
 export const tempController = async (
   req: Request,

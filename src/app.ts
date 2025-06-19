@@ -1,5 +1,5 @@
 import express from "express";
-import teacherRoutes from "./routes/teacherRoutes";
+import teacherRoutes from "@/routes/teacherRoutes";
 
 const app = express();
 

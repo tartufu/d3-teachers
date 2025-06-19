@@ -1,4 +1,4 @@
-import prisma from "../prisma/client";
+import prisma from "@/prisma/client";
 
 export const tempService = async () => {
   // do db call here
