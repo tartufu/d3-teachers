@@ -21,8 +21,9 @@ model Teacher {
 }
 
 model Student {
-  id       String    @id @default(uuid())
-  name     String
-  email    String    @unique
-  teachers Teacher[] @relation("TeacherStudents")
+  id          String    @id @default(uuid())
+  name        String
+  email       String    @unique
+  isSuspended Boolean   @default(false)
+  teachers    Teacher[] @relation("TeacherStudents")
 }

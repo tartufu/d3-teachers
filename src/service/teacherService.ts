@@ -5,6 +5,10 @@ interface RegisterStudentRequestBody {
   students: string[];
 }
 
+interface SuspendStudentRequestBody {
+  student: string;
+}
+
 export const registerStudentsService = async (
   reqBody: RegisterStudentRequestBody
 ) => {
@@ -86,6 +90,25 @@ export const getCommonStudentsService = async (reqBody: any[]) => {
     // do db call here
 
     return commonStudentEmails;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const suspendStudentService = async (
+  reqBody: SuspendStudentRequestBody
+) => {
+  try {
+    await prisma.student.findUniqueOrThrow({
+      where: { email: reqBody.student },
+    });
+
+    await prisma.student.update({
+      where: { email: reqBody.student },
+      data: { isSuspended: true },
+    });
+
+    return null;
   } catch (error) {
     console.log(error);
   }

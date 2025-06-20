@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import {
   registerStudentsService,
   getCommonStudentsService,
+  suspendStudentService,
 } from "@/service/teacherService";
 
 export const registerStudentsController = async (
@@ -39,6 +40,19 @@ export const getCommonStudentsController = async (
 
     await getCommonStudentsService(data);
     res.status(201).json({ foo: "bar" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const suspendStudentController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    await suspendStudentService(req.body);
+    res.status(204).json({ foo: "one" });
   } catch (error) {
     next(error);
   }
