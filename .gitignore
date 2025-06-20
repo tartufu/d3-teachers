@@ -137,3 +137,6 @@ dist
 
 # generated prisma client
 /prisma/generated/prisma
+
+# userstoriesmd
+/UserStories.md

@@ -5,4 +5,6 @@ const router = Router();
 
 router.get("/", tempController);
 
+router.post("", tempController);
+
 export default router;

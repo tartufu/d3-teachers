@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 
 // // Routes
-app.use("/api/teachers", teacherRoutes);
+app.use("/api", teacherRoutes);
 
 // // Global error handler (should be after routes)
 // app.use(errorHandler);
