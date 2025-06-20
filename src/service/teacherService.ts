@@ -51,3 +51,42 @@ export const registerStudentsService = async (
     console.log(error);
   }
 };
+
+export const getCommonStudentsService = async (reqBody: any[]) => {
+  try {
+    console.log("reqBody", reqBody);
+
+    const teachersWithStudents = await prisma.teacher.findMany({
+      where: {
+        email: {
+          in: reqBody,
+        },
+      },
+      include: {
+        students: {
+          select: {
+            email: true,
+          },
+        },
+      },
+    });
+
+    const studentEmailLists = teachersWithStudents.map((teacher) =>
+      teacher.students.map((student) => student.email)
+    );
+
+    console.log(studentEmailLists);
+
+    const commonStudentEmails = studentEmailLists.reduce((a, b) =>
+      a.filter((email) => b.includes(email))
+    );
+
+    console.log(commonStudentEmails);
+
+    // do db call here
+
+    return commonStudentEmails;
+  } catch (error) {
+    console.log(error);
+  }
+};
