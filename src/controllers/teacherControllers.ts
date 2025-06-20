@@ -1,13 +1,16 @@
 import { Request, Response, NextFunction } from "express";
-import { tempService } from "@/service/teacherService";
+import { registerStudentsService } from "@/service/teacherService";
 
-export const tempController = async (
+export const registerStudentsController = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    await tempService();
+    // zod handling
+    // console.log("req", req.body);
+
+    await registerStudentsService(req.body);
     res.status(201).json({ foo: "bar" });
   } catch (error) {
     next(error);

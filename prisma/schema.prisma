@@ -14,13 +14,15 @@ datasource db {
 }
 
 model Teacher {
-  id    String @id @default(uuid())
-  name  String
-  email String @unique
+  id       String    @id @default(uuid())
+  name     String
+  email    String    @unique
+  students Student[] @relation("TeacherStudents")
 }
 
 model Student {
-  id    String @id @default(uuid())
-  name  String
-  email String @unique
+  id       String    @id @default(uuid())
+  name     String
+  email    String    @unique
+  teachers Teacher[] @relation("TeacherStudents")
 }

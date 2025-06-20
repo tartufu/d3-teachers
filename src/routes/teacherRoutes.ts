@@ -1,10 +1,8 @@
 import { Router } from "express";
-import { tempController } from "@/controllers/teacherControllers";
+import { registerStudentsController } from "@/controllers/teacherControllers";
 
 const router = Router();
 
-router.get("/", tempController);
-
-router.post("", tempController);
+router.post("/register", registerStudentsController);
 
 export default router;

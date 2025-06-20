@@ -6,6 +6,11 @@ const app = express();
 app.use(express.json());
 
 // // Routes
+
+app.get("/", (req, res) => {
+  res.json({ message: "health check" });
+});
+
 app.use("/api", teacherRoutes);
 
 // // Global error handler (should be after routes)
