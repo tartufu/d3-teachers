@@ -9,6 +9,11 @@ interface SuspendStudentRequestBody {
   student: string;
 }
 
+interface RetrieveNotificationsRequestBody {
+  teacher: string;
+  notification: string;
+}
+
 export const registerStudentsService = async (
   reqBody: RegisterStudentRequestBody
 ) => {
@@ -109,6 +114,55 @@ export const suspendStudentService = async (
     });
 
     return null;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const retrieveNotificationsService = async (
+  reqBody: RetrieveNotificationsRequestBody
+) => {
+  try {
+    const query = await prisma.teacher.findFirstOrThrow({
+      where: {
+        email: reqBody.teacher,
+      },
+      include: {
+        students: {
+          select: {
+            email: true,
+          },
+          where: {
+            isSuspended: false,
+          },
+        },
+      },
+    });
+
+    // refactor this into an util
+
+    const splitNotifications = reqBody.notification.split(" ");
+    const mentionedStudentEmails = splitNotifications.filter((string) =>
+      string.startsWith("@")
+    );
+
+    console.log("splitNotifications", splitNotifications);
+    console.log("mentionedStudentEmails", mentionedStudentEmails);
+
+    const studentsEmails = query.students.map((student) => student.email);
+
+    const combinedStudentEmails = [
+      ...studentsEmails,
+      ...mentionedStudentEmails,
+    ];
+
+    const combinedStudentEmailsWithoutDuplicates = new Set(
+      combinedStudentEmails
+    );
+
+    return {
+      recipients: [...combinedStudentEmailsWithoutDuplicates],
+    };
   } catch (error) {
     console.log(error);
   }

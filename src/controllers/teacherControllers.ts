@@ -3,6 +3,7 @@ import {
   registerStudentsService,
   getCommonStudentsService,
   suspendStudentService,
+  retrieveNotificationsService,
 } from "@/service/teacherService";
 
 export const registerStudentsController = async (
@@ -53,6 +54,19 @@ export const suspendStudentController = async (
   try {
     await suspendStudentService(req.body);
     res.status(204).json({ foo: "one" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const retrieveNotificationsController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data = await retrieveNotificationsService(req.body);
+    res.status(200).json(data);
   } catch (error) {
     next(error);
   }
