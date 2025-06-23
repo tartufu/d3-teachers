@@ -63,8 +63,6 @@ export const registerStudentsService = async (
 
 export const getCommonStudentsService = async (reqBody: any[]) => {
   try {
-    console.log("reqBody", reqBody);
-
     const teachersWithStudents = await prisma.teacher.findMany({
       where: {
         email: {
@@ -84,17 +82,15 @@ export const getCommonStudentsService = async (reqBody: any[]) => {
       teacher.students.map((student) => student.email)
     );
 
-    console.log(studentEmailLists);
-
     const commonStudentEmails = studentEmailLists.reduce((a, b) =>
       a.filter((email) => b.includes(email))
     );
 
     console.log(commonStudentEmails);
 
-    // do db call here
-
-    return commonStudentEmails;
+    return {
+      students: commonStudentEmails,
+    };
   } catch (error) {
     console.log(error);
   }

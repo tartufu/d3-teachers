@@ -16,7 +16,7 @@ export const registerStudentsController = async (
     // console.log("req", req.body);
 
     await registerStudentsService(req.body);
-    res.status(204).json({ foo: "bar" });
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
@@ -39,8 +39,8 @@ export const getCommonStudentsController = async (
       data = [req.query.teacher];
     }
 
-    await getCommonStudentsService(data);
-    res.status(201).json({ foo: "bar" });
+    const commonStudentsData = await getCommonStudentsService(data);
+    res.status(200).json(commonStudentsData);
   } catch (error) {
     next(error);
   }
@@ -53,7 +53,7 @@ export const suspendStudentController = async (
 ) => {
   try {
     await suspendStudentService(req.body);
-    res.status(204).json({ foo: "one" });
+    res.status(204).send();
   } catch (error) {
     next(error);
   }
