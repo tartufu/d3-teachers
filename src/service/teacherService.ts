@@ -1,5 +1,5 @@
 import prisma from "@/prisma/client";
-import { generateErrorObj } from "@/utils/error";
+import { generateErrorObj } from "@/utils";
 
 interface RegisterStudentRequestBody {
   teacher: string;
@@ -114,6 +114,7 @@ export const suspendStudentService = async (
     if (error.code === "P2025") {
       throw generateErrorObj("Student not found", 404);
     }
+    throw error;
   }
 };
 
@@ -163,5 +164,6 @@ export const retrieveNotificationsService = async (
     };
   } catch (error) {
     console.log(error);
+    throw error;
   }
 };
