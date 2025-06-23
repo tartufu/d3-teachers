@@ -1,6 +1,7 @@
 import express from "express";
 import teacherRoutes from "@/routes/teacherRoutes";
 import { errorHandler } from "./middlware/errorHandler";
+import { generateErrorObj } from "./utils/error";
 
 const app = express();
 
@@ -14,9 +15,7 @@ app.use("/api", teacherRoutes);
 
 // 404 middleware - must come AFTER all routes
 app.use((req, res, next) => {
-  const error = new Error("Not Found");
-  (error as any).status = 404;
-  next(error);
+  next(generateErrorObj("Route does not exist", 404));
 });
 
 app.use(errorHandler);

@@ -16,6 +16,7 @@ export const registerStudentsController = async (
     // console.log("req", req.body);
 
     await registerStudentsService(req.body);
+
     res.status(204).send();
   } catch (error) {
     next(error);

@@ -1,4 +1,5 @@
 import prisma from "@/prisma/client";
+import { generateErrorObj } from "@/utils/error";
 
 interface RegisterStudentRequestBody {
   teacher: string;
@@ -49,15 +50,12 @@ export const registerStudentsService = async (
 
     console.log(teachersWithStudents);
 
-    // await prisma.student.findMany
-
-    // console.log("isTeacherExist", isTeacherExist);
-    // const users = await prisma.teacher.findMany();
-
-    // console.log("USERS", users);
     return null;
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    if (error.code === "P2025") {
+      throw generateErrorObj("Teacher not found", 404);
+    }
+    throw error;
   }
 };
 
@@ -93,6 +91,7 @@ export const getCommonStudentsService = async (reqBody: any[]) => {
     };
   } catch (error) {
     console.log(error);
+    throw error;
   }
 };
 
@@ -110,8 +109,11 @@ export const suspendStudentService = async (
     });
 
     return null;
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
+    if (error.code === "P2025") {
+      throw generateErrorObj("Student not found", 404);
+    }
   }
 };
 
