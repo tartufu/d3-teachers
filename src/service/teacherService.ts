@@ -1,5 +1,5 @@
 import prisma from "@/prisma/client";
-import { generateErrorObj } from "@/utils";
+import { generateErrorObj } from "@/utils/error";
 
 interface RegisterStudentRequestBody {
   teacher: string;

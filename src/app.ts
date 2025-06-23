@@ -1,7 +1,7 @@
 import express from "express";
 import teacherRoutes from "@/routes/teacherRoutes";
 import { errorHandler } from "./middlware/errorHandler";
-import { generateErrorObj } from "./utils";
+import { generateErrorObj } from "./utils/error";
 
 const app = express();
 
