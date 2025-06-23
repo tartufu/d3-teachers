@@ -1,5 +1,9 @@
 import prisma from "@/prisma/client";
 import { generateErrorObj } from "@/utils/error";
+import {
+  combinedStudentEmailsWithoutDupes,
+  getMentionedStudents,
+} from "@/utils/strings";
 
 interface RegisterStudentRequestBody {
   teacher: string;
@@ -122,45 +126,39 @@ export const retrieveNotificationsService = async (
   reqBody: RetrieveNotificationsRequestBody
 ) => {
   try {
-    const query = await prisma.teacher.findFirstOrThrow({
-      where: {
-        email: reqBody.teacher,
-      },
-      include: {
-        students: {
-          select: {
-            email: true,
-          },
-          where: {
-            isSuspended: false,
+    const studentsEmails = await prisma.teacher
+      .findFirstOrThrow({
+        where: {
+          email: reqBody.teacher,
+        },
+        include: {
+          students: {
+            select: {
+              email: true,
+            },
+            where: {
+              isSuspended: false,
+            },
           },
         },
-      },
-    });
+      })
+      .then((teacherRecord) =>
+        teacherRecord.students.map((student) => student.email)
+      );
 
-    // refactor this into an util
-
-    const splitNotifications = reqBody.notification.split(" ");
-    const mentionedStudentEmails = splitNotifications.filter((string) =>
-      string.startsWith("@")
+    const mentionedStudentEmails = getMentionedStudents(
+      reqBody.notification.split(" ")
     );
 
-    console.log("splitNotifications", splitNotifications);
-    console.log("mentionedStudentEmails", mentionedStudentEmails);
-
-    const studentsEmails = query.students.map((student) => student.email);
-
-    const combinedStudentEmails = [
-      ...studentsEmails,
-      ...mentionedStudentEmails,
-    ];
-
-    const combinedStudentEmailsWithoutDuplicates = new Set(
-      combinedStudentEmails
-    );
+    // const studentsEmails = query.students.map((student) => student.email);
 
     return {
-      recipients: [...combinedStudentEmailsWithoutDuplicates],
+      recipients: [
+        ...combinedStudentEmailsWithoutDupes(
+          mentionedStudentEmails,
+          studentsEmails
+        ),
+      ],
     };
   } catch (error) {
     console.log(error);
