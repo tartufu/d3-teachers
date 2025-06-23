@@ -32,6 +32,8 @@ export const getCommonStudentsController = async (
     // zod handling
     // console.log("req", req.body);
 
+    console.log(req.query);
+
     let data = [];
 
     if (Array.isArray(req.query.teacher)) {
