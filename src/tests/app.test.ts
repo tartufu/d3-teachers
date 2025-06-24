@@ -134,6 +134,177 @@ describe("POST /register", () => {
   });
 });
 
+describe("GET /commonstudents", () => {
+  it("should return 400 error if request query does not match common student schema", async () => {
+    const res = await request(app).get("/api/commonstudents");
+
+    // const res = await request(app).get(
+    //   "/api/commonstudents?teacher=ben.lee%40email.com"
+    // );
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      error: "Invalid query parameters",
+      issues: [
+        {
+          code: "invalid_union",
+          message: "Invalid input",
+          path: ["teacher"],
+          unionErrors: [
+            {
+              issues: [
+                {
+                  code: "invalid_type",
+                  expected: "string",
+                  message: "Required",
+                  path: ["teacher"],
+                  received: "undefined",
+                },
+              ],
+              name: "ZodError",
+            },
+            {
+              issues: [
+                {
+                  code: "invalid_type",
+                  expected: "array",
+                  message: "Required",
+                  path: ["teacher"],
+                  received: "undefined",
+                },
+              ],
+              name: "ZodError",
+            },
+          ],
+        },
+      ],
+    });
+  });
+
+  it("should return 400 error if request query does not properly match common student schema", async () => {
+    const res = await request(app).get("/api/commonstudents?student=123");
+
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      error: "Invalid query parameters",
+      issues: [
+        {
+          code: "invalid_union",
+          message: "Invalid input",
+          path: ["teacher"],
+          unionErrors: [
+            {
+              issues: [
+                {
+                  code: "invalid_type",
+                  expected: "string",
+                  message: "Required",
+                  path: ["teacher"],
+                  received: "undefined",
+                },
+              ],
+              name: "ZodError",
+            },
+            {
+              issues: [
+                {
+                  code: "invalid_type",
+                  expected: "array",
+                  message: "Required",
+                  path: ["teacher"],
+                  received: "undefined",
+                },
+              ],
+              name: "ZodError",
+            },
+          ],
+        },
+      ],
+    });
+  });
+
+  it("should return 200 response if able to find common students for one teacher", async () => {
+    prisma.teacher.findMany.mockResolvedValue([
+      {
+        id: "123",
+        email: "foo",
+        name: "teacherOne",
+        students: [
+          {
+            email: "234",
+          },
+        ],
+      },
+    ] as any);
+
+    const res = await request(app).get(
+      "/api/commonstudents?teacher=ben.lee%40email.com"
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      students: ["234"],
+    });
+  });
+
+  it("should return 200 response if able to find common students for two teachers without duplicates", async () => {
+    prisma.teacher.findMany.mockResolvedValue([
+      {
+        id: "123",
+        email: "foo",
+        name: "teacherOne",
+        students: [
+          {
+            email: "234",
+          },
+          {
+            email: "555",
+          },
+        ],
+      },
+      {
+        id: "456",
+        email: "bar",
+        name: "teacherTwo",
+        students: [
+          {
+            email: "234",
+          },
+          {
+            email: "789",
+          },
+        ],
+      },
+    ] as any);
+
+    const res = await request(app).get(
+      "/api/commonstudents?teacher=ben.lee%40email.com&teacher=anette.tang%40email.com"
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      students: ["234"],
+    });
+  });
+
+  it("should return 500 error as a catch all error", async () => {
+    const error = new Error("There was an error.");
+
+    prisma.teacher.findMany.mockImplementation(() => {
+      throw error;
+    });
+
+    const res = await request(app).get(
+      "/api/commonstudents?teacher=ben.lee%40email.com"
+    );
+
+    expect(res.status).toBe(500);
+    expect(res.body).toEqual({
+      details: "There was an error.",
+      error: "Internal Server Error",
+    });
+  });
+});
+
 describe("POST /suspend", () => {
   it("should return 400 error if request body does not match schema", async () => {
     const res = await request(app).post("/api/suspend").send({

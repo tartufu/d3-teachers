@@ -12,9 +12,6 @@ export const registerStudentsController = async (
   next: NextFunction
 ) => {
   try {
-    // zod handling
-    // console.log("req", req.body);
-
     await registerStudentsService(req.body);
 
     res.status(204).send();
@@ -29,9 +26,6 @@ export const getCommonStudentsController = async (
   next: NextFunction
 ) => {
   try {
-    // zod handling
-    // console.log("req", req.body);
-
     console.log(req.query);
 
     let data = [];
