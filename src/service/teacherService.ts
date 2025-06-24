@@ -41,19 +41,6 @@ export const registerStudentsService = async (
       },
     });
 
-    const teachersWithStudents = await prisma.teacher.findFirst({
-      where: { email: reqBody.teacher },
-      include: {
-        students: {
-          select: {
-            email: true,
-          },
-        },
-      },
-    });
-
-    console.log(teachersWithStudents);
-
     return null;
   } catch (error: any) {
     if (error.code === "P2025") {

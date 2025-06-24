@@ -15,6 +15,125 @@ describe("GET /ping 404 path", () => {
   });
 });
 
+describe("POST /register", () => {
+  it("should return 400 error if request body does not match register student schema", async () => {
+    const res = await request(app).post("/api/register").send({
+      foo: 123,
+    });
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      error: "Invalid data",
+      details: [
+        {
+          message: "teacher is Required",
+        },
+        {
+          message: "students is Required",
+        },
+      ],
+    });
+  });
+
+  it("should return 400 error if request body partially match register student schema", async () => {
+    const res = await request(app).post("/api/register").send({
+      teacher: "12344",
+    });
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      error: "Invalid data",
+      details: [
+        {
+          message: "students is Required",
+        },
+      ],
+    });
+  });
+
+  it("should return 400 error if request body match register student schema, but wrong type given", async () => {
+    const res = await request(app).post("/api/register").send({
+      teacher: 12344,
+      students: "455",
+    });
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      error: "Invalid data",
+      details: [
+        {
+          message: "teacher is Expected string, received number",
+        },
+        {
+          message: "students is Expected array, received string",
+        },
+      ],
+    });
+  });
+
+  it("should return 404 error if unable to find teacher in db", async () => {
+    const error = new Error("There was an error.") as Error & { code: string };
+    error.code = "P2025";
+
+    prisma.teacher.findFirstOrThrow.mockImplementation(() => {
+      throw error;
+    });
+    const res = await request(app)
+      .post("/api/register")
+      .send({
+        teacher: "12344",
+        students: ["455"],
+      });
+
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({
+      error: "Not Found",
+      details: "Teacher not found",
+    });
+  });
+
+  it("should return 204 response if able to find and register student", async () => {
+    prisma.teacher.findFirstOrThrow.mockResolvedValue({
+      id: "123",
+      email: "123",
+      name: "123",
+    });
+
+    prisma.teacher.update.mockResolvedValue({
+      id: "123",
+      email: "123",
+      name: "123",
+    });
+
+    const res = await request(app)
+      .post("/api/register")
+      .send({
+        teacher: "12344",
+        students: ["455"],
+      });
+
+    expect(res.status).toBe(204);
+  });
+
+  it("should return 500 error as a catch all error", async () => {
+    const error = new Error("There was an error.");
+
+    prisma.teacher.findFirstOrThrow.mockImplementation(() => {
+      throw error;
+    });
+
+    const res = await request(app)
+      .post("/api/register")
+      .send({
+        teacher: "12344",
+        students: ["455"],
+      });
+
+    expect(res.status).toBe(500);
+    expect(res.body).toEqual({
+      details: "There was an error.",
+      error: "Internal Server Error",
+    });
+  });
+});
+
 describe("POST /suspend", () => {
   it("should return 400 error if request body does not match schema", async () => {
     const res = await request(app).post("/api/suspend").send({
