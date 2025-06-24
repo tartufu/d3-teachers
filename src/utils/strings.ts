@@ -7,9 +7,6 @@ export const getMentionedStudents = (students: string[]) => {
     studentEmail.substring(1)
   );
 
-  console.log("mentionedStudentEmails", mentionedStudentEmails);
-  //   console.log("mentionedStudentEmails", mentionedStudentEmails);
-
   return mentionedStudentEmails;
 };
 
@@ -24,5 +21,5 @@ export const combinedStudentEmailsWithoutDupes = (
 
   const combinedStudentEmailsWithoutDuplicates = new Set(combinedStudentEmails);
 
-  return combinedStudentEmailsWithoutDuplicates;
+  return [...combinedStudentEmailsWithoutDuplicates];
 };

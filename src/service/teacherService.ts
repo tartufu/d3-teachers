@@ -153,12 +153,10 @@ export const retrieveNotificationsService = async (
     // const studentsEmails = query.students.map((student) => student.email);
 
     return {
-      recipients: [
-        ...combinedStudentEmailsWithoutDupes(
-          mentionedStudentEmails,
-          studentsEmails
-        ),
-      ],
+      recipients: combinedStudentEmailsWithoutDupes(
+        mentionedStudentEmails,
+        studentsEmails
+      ),
     };
   } catch (error) {
     console.log(error);

@@ -1,4 +1,4 @@
-import { generateErrorObj } from "./error";
+import { generateErrorObj } from "../error";
 
 describe("should generate", () => {
   it("404 error obj", () => {
