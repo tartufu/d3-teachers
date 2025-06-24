@@ -29,15 +29,12 @@ export const validateReqBody = (schema: z.ZodObject<any, any>) => {
 export const validateReqQuery = (schema: z.ZodObject<any, any>) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
-      const parsed = schema.parse(req.query);
-
-      console.log("PARSED", parsed);
-
-      req.query = parsed; // overwrite with parsed (and typed!) version
+      schema.parse(req.query);
       next();
     } catch (err) {
+      console.log("ERR", err);
       if (err instanceof z.ZodError) {
-        return res.status(400).json({
+        res.status(400).json({
           error: "Invalid query parameters",
           issues: err.errors,
         });

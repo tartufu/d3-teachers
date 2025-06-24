@@ -7,9 +7,13 @@ import {
   retrieveNotificationsController,
 } from "@/controllers/teacherControllers";
 
-import { validateReqBody } from "@/middlware/validationMiddlware";
+import {
+  validateReqBody,
+  validateReqQuery,
+} from "@/middlware/validationMiddlware";
 
 import {
+  commonStudentsSchema,
   registerStudentSchema,
   retrieveNotificationsSchema,
   suspendStudentSchema,
@@ -23,7 +27,11 @@ router.post(
   registerStudentsController
 );
 
-router.get("/commonstudents", getCommonStudentsController);
+router.get(
+  "/commonstudents",
+  validateReqQuery(commonStudentsSchema),
+  getCommonStudentsController
+);
 
 router.post(
   "/suspend",
