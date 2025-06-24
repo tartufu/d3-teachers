@@ -7,7 +7,7 @@ import {
   retrieveNotificationsController,
 } from "@/controllers/teacherControllers";
 
-import { validateData } from "@/middlware/validationMiddlware";
+import { validateReqBody } from "@/middlware/validationMiddlware";
 
 import {
   registerStudentSchema,
@@ -19,7 +19,7 @@ const router = Router();
 
 router.post(
   "/register",
-  validateData(registerStudentSchema),
+  validateReqBody(registerStudentSchema),
   registerStudentsController
 );
 
@@ -27,13 +27,13 @@ router.get("/commonstudents", getCommonStudentsController);
 
 router.post(
   "/suspend",
-  validateData(suspendStudentSchema),
+  validateReqBody(suspendStudentSchema),
   suspendStudentController
 );
 
 router.post(
   "/retrievefornotifications",
-  validateData(retrieveNotificationsSchema),
+  validateReqBody(retrieveNotificationsSchema),
   retrieveNotificationsController
 );
 
