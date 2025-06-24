@@ -1,4 +1,4 @@
-import prisma from "@/prisma/client";
+import prisma from "@/libs/prisma";
 import { generateErrorObj } from "@/utils/error";
 import {
   combinedStudentEmailsWithoutDupes,
