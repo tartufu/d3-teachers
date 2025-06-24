@@ -138,9 +138,6 @@ describe("GET /commonstudents", () => {
   it("should return 400 error if request query does not match common student schema", async () => {
     const res = await request(app).get("/api/commonstudents");
 
-    // const res = await request(app).get(
-    //   "/api/commonstudents?teacher=ben.lee%40email.com"
-    // );
     expect(res.status).toBe(400);
     expect(res.body).toEqual({
       error: "Invalid query parameters",
@@ -370,6 +367,129 @@ describe("POST /suspend", () => {
 
     const res = await request(app).post("/api/suspend").send({
       student: "12343",
+    });
+
+    expect(res.status).toBe(500);
+    expect(res.body).toEqual({
+      details: "There was an error.",
+      error: "Internal Server Error",
+    });
+  });
+});
+
+describe("POST /retrievefornotifications", () => {
+  it("should return 400 error if request body does not match retrieve notifications schema", async () => {
+    const res = await request(app).post("/api/retrievefornotifications").send({
+      foo: 123,
+    });
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      error: "Invalid data",
+      details: [
+        {
+          message: "teacher is Required",
+        },
+        {
+          message: "notification is Required",
+        },
+      ],
+    });
+  });
+
+  it("should return 400 error if request body partially match register student schema", async () => {
+    const res = await request(app).post("/api/retrievefornotifications").send({
+      teacher: "12344",
+    });
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      error: "Invalid data",
+      details: [
+        {
+          message: "notification is Required",
+        },
+      ],
+    });
+  });
+
+  it("should return 400 error if request body match register student schema, but wrong type given", async () => {
+    const res = await request(app).post("/api/retrievefornotifications").send({
+      teacher: 12344,
+      notification: 123,
+    });
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      error: "Invalid data",
+      details: [
+        {
+          message: "teacher is Expected string, received number",
+        },
+        {
+          message: "notification is Expected string, received number",
+        },
+      ],
+    });
+  });
+
+  it("should return 404 error if unable to find teacher in db", async () => {
+    const error = new Error("There was an error.") as Error & { code: string };
+    error.code = "P2025";
+
+    prisma.teacher.findFirstOrThrow.mockImplementation(() => {
+      throw error;
+    });
+
+    const res = await request(app).post("/api/retrievefornotifications").send({
+      teacher: "12344",
+      notification: "123",
+    });
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({
+      error: "Not Found",
+      details: "Teacher not found",
+    });
+  });
+
+  it("should return 200 response if able to find and retrieve notifications", async () => {
+    prisma.teacher.findFirstOrThrow.mockResolvedValue({
+      id: "123",
+      email: "123",
+      name: "123",
+      students: [
+        {
+          email: "123444",
+        },
+        {
+          email: "567567",
+        },
+      ],
+    } as any);
+
+    const res = await request(app).post("/api/retrievefornotifications").send({
+      teacher: "12344",
+      notification: "Hey everybody @jacob.chua@email.com @chloe.phua@email.com",
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      recipients: [
+        "jacob.chua@email.com",
+        "chloe.phua@email.com",
+        "123444",
+        "567567",
+      ],
+    });
+  });
+
+  it("should return 500 error as a catch all error", async () => {
+    const error = new Error("There was an error.");
+
+    prisma.teacher.findFirstOrThrow.mockImplementation(() => {
+      throw error;
+    });
+
+    const res = await request(app).post("/api/retrievefornotifications").send({
+      teacher: "12344",
+      notification: "123",
     });
 
     expect(res.status).toBe(500);

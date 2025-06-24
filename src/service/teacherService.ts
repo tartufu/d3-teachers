@@ -145,8 +145,11 @@ export const retrieveNotificationsService = async (
         studentsEmails
       ),
     };
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
+    if (error.code === "P2025") {
+      throw generateErrorObj("Teacher not found", 404);
+    }
     throw error;
   }
 };
