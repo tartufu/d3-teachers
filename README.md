@@ -35,3 +35,7 @@ typescript for typing and autocompletion <br />
 - src/controllers handle request/response logic <br />
 - src/service stores business logic and the ORM queries that call DB. <br />
 - src/middleware stores the middlware that should be called before/after controller actions. <br />
+
+## Hosted Api
+
+http://18.141.138.121:3000/
